@@ -23,7 +23,7 @@ os.chdir(dname)
 
    
 
-def scrap_page_it(user_url,i):
+def scrap_movies_it(user_url,i):
     df = pd.DataFrame({'title': [], 'date': [], 'avg_rating': [], 'my_rating': []})
     url = user_url + str(i)+'&orderby=0'
     driver.get(url)
@@ -49,15 +49,15 @@ def scrap_page_it(user_url,i):
             df = df.append(new_row,ignore_index=True)
 
     if req.get(user_url + str(i+1)+'&orderby=0'):        
-        return pd.concat([df, scrap_page_it(user_url,i+1)], ignore_index=True)
+        return pd.concat([df, scrap_movies_it(user_url,i+1)], ignore_index=True)
     else: 
         print('Done!')
         return df
         
 
-def scrap_page(user_url):
+def scrap_movies(user_url):
     user_url = user_url + '&p='
-    return scrap_page_it(user_url,1)
+    return scrap_movies_it(user_url,1)
 
 
 
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     users = {'user1':user1, 'user2':user2, 'user3': user3}
     
     for user in users:        
-        df = scrap_page(users[user])
+        df = scrap_movies(users[user])
         df.to_excel(str(user) + '.xlsx', index=False)
         # df.to_csv(str(user) + '.xlsx', index=False)
 
