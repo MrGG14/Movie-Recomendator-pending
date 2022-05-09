@@ -39,11 +39,19 @@ ratings_small_df['movieId'] = movies_metadata_df['movieId'].astype('string', cop
 full_df = pd.merge(ratings_small_df,movies_metadata_df, on='movieId')
 
 #dropping genre labels, keeping just its id
-for i in range(len(full_df['genres'])):
-    genres = full_df['genres'][i]
-    numbers = re.findall(r'\d+', genres)
+# for i in range(len(full_df['genres'])):
+#     genres = full_df['genres'][i]
+#     numbers = re.findall(r'\d+', genres)
+#     ids = ','.join([n for n in numbers])
+#     full_df.loc[i,'genres']='[' + ids + ']'
+
+def genre_ids(x):
+    numbers = re.findall(r'\d+',x)
     ids = ','.join([n for n in numbers])
-    full_df.loc[i,'genres']='[' + ids + ']'
+    return '[' + ids + ']'
+
+full_df['genres'] = full_df['genres'].apply(genre_ids)
+
 
 #create users_df
 users_df  = full_df.groupby(by=['userId']).mean()
@@ -57,8 +65,8 @@ users_df['rated_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(z
 users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
 users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
-users_df
-
+users_df['rated_movs'][1]
+full_df['genres']
 
     
 # dummies = full_df['genres'].str.get_dummies()
