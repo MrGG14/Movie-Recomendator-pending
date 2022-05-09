@@ -66,21 +66,18 @@ users_df['genres_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(
 users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
 users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
-# full_df['genres'] = full_df['genres'].astype('int')
-print(full_df.info())
-print(users_df.info())
-print(full_df['genres'])
-
+# print(full_df.info())
+# print(users_df.info())
 
 mlb = MultiLabelBinarizer()
-s=users_df['rated_movs']
-s[1]
-s
-pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
-
+s = users_df['rated_movs']
+seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
+users_df = pd.merge(users_df,seen_movs, on='userId')
+print(users_df)
 
 ''' 
-COSAS DE PRUEBAS
+COSAS DE PRUEBASs[1]
+s
 
 
 # def genre_count(x):
