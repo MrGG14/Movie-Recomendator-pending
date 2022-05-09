@@ -48,7 +48,7 @@ full_df = pd.merge(ratings_small_df,movies_metadata_df, on='movieId')
 def genre_ids(x):
     numbers = re.findall(r'\d+',x)
     ids = ','.join([n for n in numbers])
-    return '[' + ids + ']'
+    return  list(ids.split(',')) 
 
 full_df['genres'] = full_df['genres'].apply(genre_ids)
 
@@ -62,13 +62,17 @@ users_df['min_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].min()
 users_df['max_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].max()
 users_df['total_mins']  = full_df.groupby(by=['userId'], axis=0)['runtime'].sum()
 users_df['rated_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(zip(full_df['movieId'], full_df['rating'])))
+users_df['genres_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(zip(full_df['movieId'], full_df['genres'])))
 users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
 users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
-users_df['rated_movs'][1]
 full_df['genres']
-
+users_df
+# def genre_count(x):
     
+# users_df['genres_count'] = full_df.groupby(by=['userId'], axis=0)['genres'].apply(dict)
+# full_df.groupby(by=['userId'], axis=0)['genres'].apply(list)
+# list(full_df['genres'][0].split(','))
 # dummies = full_df['genres'].str.get_dummies()
 # dummies.head()        
 
