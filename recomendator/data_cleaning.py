@@ -34,7 +34,7 @@ movies_metadata_df['movieId'] = movies_metadata_df['movieId'].astype('string', c
 
 
 ratings_small_df.drop(columns=['timestamp'],inplace=True)
-ratings_small_df['movieId'] = movies_metadata_df['movieId'].astype('string', copy=False)
+ratings_small_df['movieId'] = ratings_small_df['movieId'].astype('string', copy=False)
 
 full_df = pd.merge(ratings_small_df,movies_metadata_df, on='movieId')
 
@@ -73,7 +73,8 @@ mlb = MultiLabelBinarizer()
 s = users_df['rated_movs']
 seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
 users_df = pd.merge(users_df,seen_movs, on='userId')
-print(users_df)
+
+
 
 ''' 
 COSAS DE PRUEBASs[1]
