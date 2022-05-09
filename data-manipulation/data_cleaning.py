@@ -8,6 +8,7 @@ Created on Tue Mar 22 01:49:44 2022
 import pandas as pd
 import re
 import os
+from sklearn.preprocessing import MultiLabelBinarizer
 
 
 #%%
@@ -23,21 +24,13 @@ movies_metadata_df = pd.read_csv(root+'movies_metadata.csv')
 keywords_df = pd.read_csv(root+'keywords.csv')
 
 #%%
+
+#delete unncecessary columns
 movies_metadata_df.drop(columns=['adult', 'belongs_to_collection', 'homepage','imdb_id', 'overview','poster_path','tagline','status','original_title','video', 'popularity','revenue','spoken_languages'],inplace=True) #se podria quitar 'title' en vez de 'original_title', depende del idioma del usuario
+
+#mergin dfs
 movies_metadata_df.rename(columns={'id': 'movieId'},inplace=True)
-# pd.to_datetime(movies_metadata_df['release_date'])
-movies_metadata_df['budget'] = movies_metadata_df['budget'].astype('int64', copy=False)
 movies_metadata_df['movieId'] = movies_metadata_df['movieId'].astype('string', copy=False)
-
-# to_float = ['popularity']
-
-# hay q ver que hacer con 'genre'
-# genres = full_df['genres'].tolist()
-
-
-
-# to_str = ['genres','original_language','production_companies','spoken_languages','title']
-# con1.loc[:,'available'] = con1.loc[:,'available'].map({'t': 1, 'f': 0})
 
 
 ratings_small_df.drop(columns=['timestamp'],inplace=True)
@@ -45,23 +38,61 @@ ratings_small_df['movieId'] = movies_metadata_df['movieId'].astype('string', cop
 
 full_df = pd.merge(ratings_small_df,movies_metadata_df, on='movieId')
 
-
+#dropping genre labels, keeping just its id
 for i in range(len(full_df['genres'])):
     genres = full_df['genres'][i]
     numbers = re.findall(r'\d+', genres)
     ids = ','.join([n for n in numbers])
-    full_df.loc[i,'genres']=ids
-        
+    full_df.loc[i,'genres']='[' + ids + ']'
+
+#create users_df
+users_df  = full_df.groupby(by=['userId']).mean()
+
+users_df['n_movies']  = full_df.groupby(by=['userId'], axis=0)['rating'].count()
+users_df['std_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].std()
+users_df['min_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].min()
+users_df['max_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].max()
+users_df['total_mins']  = full_df.groupby(by=['userId'], axis=0)['runtime'].sum()
+users_df['rated_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(zip(full_df['movieId'], full_df['rating'])))
+users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
+users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
+
+users_df
+
+
+    
+# dummies = full_df['genres'].str.get_dummies()
+# dummies.head()        
+
+# mlb = MultiLabelBinarizer()
+# s=full_df['genres']
+# pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
 
 #%%
 print(movies_metadata_df.info())
-print(ratings_small_df.info())
+print(ratings_small_df['rating'])
 print(full_df.info())
-print(full_df['genres'])
+print(full_df['vote_average'])
 print(len(ratings_small_df.duplicated()==False))
 print(movies_metadata_df.info())
 a = full_df['genres'].tolist()
 print(full_df.loc[0]['rating'])
 #%%
-full_df[0:100].to_excel('ooutput.xlsx')
-
+# full_df[0:100].to_excel('ooutput.xlsx')
+full_df['genres'].dtype
+df = pd.DataFrame(
+    {'groups':
+        [['12','3','5'],
+        ['c'],
+        ['b','c','e'],
+        ['a','c'],
+        ['b','e']]
+    }, columns=['groups'])
+df
+x = df['groups']
+x
+d=s.tolist()
+s
+mlb.fit([s])
+mlb.classes_
+pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
