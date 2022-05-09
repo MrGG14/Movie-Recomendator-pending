@@ -18,10 +18,10 @@ os.chdir(dname)
 
 #%%
 # links_small_df = pd.read_csv('links_small.csv')
-root = '../datasets/'
-ratings_small_df = pd.read_csv(root+'ratings_small.csv')
-movies_metadata_df = pd.read_csv(root+'movies_metadata.csv')
-keywords_df = pd.read_csv(root+'keywords.csv')
+
+ratings_small_df = pd.read_csv('ratings_small.csv')
+movies_metadata_df = pd.read_csv('movies_metadata.csv')
+keywords_df = pd.read_csv('keywords.csv')
 
 #%%
 
@@ -56,18 +56,28 @@ full_df['genres'] = full_df['genres'].apply(genre_ids)
 #create users_df
 users_df  = full_df.groupby(by=['userId']).mean()
 
-users_df['n_movies']  = full_df.groupby(by=['userId'], axis=0)['rating'].count()
-users_df['std_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].std()
-users_df['min_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].min()
-users_df['max_rating']  = full_df.groupby(by=['userId'], axis=0)['rating'].max()
-users_df['total_mins']  = full_df.groupby(by=['userId'], axis=0)['runtime'].sum()
+users_df['n_movies']  = full_df.groupby('userId')['rating'].count()
+users_df['std_rating']  = full_df.groupby('userId')['rating'].std()
+users_df['min_rating']  = full_df.groupby('userId')['rating'].min()
+users_df['max_rating']  = full_df.groupby('userId')['rating'].max()
+users_df['total_mins']  = full_df.groupby('userId')['runtime'].sum()
 users_df['rated_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(zip(full_df['movieId'], full_df['rating'])))
 users_df['genres_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(zip(full_df['movieId'], full_df['genres'])))
 users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
 users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
-full_df['genres']
-users_df
+# full_df['genres'] = full_df['genres'].astype('int')
+print(full_df.info())
+print(users_df.info())
+print(full_df['genres'])
+
+
+
+
+''' 
+COSAS DE PRUEBAS
+
+
 # def genre_count(x):
     
 # users_df['genres_count'] = full_df.groupby(by=['userId'], axis=0)['genres'].apply(dict)
@@ -81,30 +91,32 @@ users_df
 # pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
 
 #%%
-print(movies_metadata_df.info())
-print(ratings_small_df['rating'])
-print(full_df.info())
-print(full_df['vote_average'])
-print(len(ratings_small_df.duplicated()==False))
-print(movies_metadata_df.info())
-a = full_df['genres'].tolist()
-print(full_df.loc[0]['rating'])
-#%%
-# full_df[0:100].to_excel('ooutput.xlsx')
-full_df['genres'].dtype
-df = pd.DataFrame(
-    {'groups':
-        [['12','3','5'],
-        ['c'],
-        ['b','c','e'],
-        ['a','c'],
-        ['b','e']]
-    }, columns=['groups'])
-df
-x = df['groups']
-x
-d=s.tolist()
-s
-mlb.fit([s])
-mlb.classes_
-pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
+# print(movies_metadata_df.info())
+# print(ratings_small_df['rating'])
+# print(full_df.info())
+# print(full_df['vote_average'])
+# print(len(ratings_small_df.duplicated()==False))
+# print(movies_metadata_df.info())
+# a = full_df['genres'].tolist()
+# print(full_df.loc[0]['rating'])
+# #%%
+# # full_df[0:100].to_excel('ooutput.xlsx')
+# full_df['genres'].dtype
+# df = pd.DataFrame(
+#     {'groups':
+#         [['12','3','5'],
+#         ['c'],
+#         ['b','c','e'],
+#         ['a','c'],
+#         ['b','e']]
+#     }, columns=['groups'])
+# df
+# x = df['groups']
+# x
+# d=s.tolist()
+# s
+# mlb.fit([s])
+# mlb.classes_
+# pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
+
+'''
