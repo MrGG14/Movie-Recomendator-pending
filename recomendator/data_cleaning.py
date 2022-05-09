@@ -72,8 +72,10 @@ print(users_df.info())
 print(full_df['genres'])
 
 
-
-
+mlb = MultiLabelBinarizer()
+s=users_df['rated_movs']
+s
+pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
 ''' 
 COSAS DE PRUEBAS
 
