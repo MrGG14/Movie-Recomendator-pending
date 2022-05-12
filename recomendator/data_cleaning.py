@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Tue Mar 22 01:49:44 2022
@@ -8,11 +9,24 @@ Created on Tue Mar 22 01:49:44 2022
 import pandas as pd
 import re
 import os
+
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+
 import numpy as np
+import matplotlib.pyplot as plt
+import scipy.cluster.hierarchy as shc
 
 
+import warnings
+warnings.filterwarnings("ignore")
+
+encoder = LabelEncoder()
+mlb = MultiLabelBinarizer()
+scaler = StandardScaler()
 
 #%%
 abspath = os.path.abspath(__file__)
@@ -76,9 +90,7 @@ users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
 
 
-
 #create binary columns wether user has rated that movie
-mlb = MultiLabelBinarizer()
 s = users_df['rated_movs']
 seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index) 
 
@@ -91,41 +103,40 @@ normalized_df=(users_df-users_df.mean())/users_df.std()
 normalized_df
 
 
-#standardise the data
-# from sklearn.preprocessing import StandardScaler
-# scaler = StandardScaler()
-
-# standardized = scaler.fit_transform(users_df)
-
-# #clustering
-# cluster = AgglomerativeClustering(n_clusters=671, affinity='euclidean', linkage='ward')
-# a=cluster.fit_predict(normalized_df)
-# b=cluster.fit_predict(standardized)
-# print(a==b) #son iguales
-
-
-import matplotlib.pyplot as plt
-
 normalized_df.shape
 normalized_df.head()
+
 data = normalized_df.iloc[:, 0:7].values
-
-import scipy.cluster.hierarchy as shc
-
 plt.figure(figsize=(10, 7))
-plt.title("Customer Dendograms")
 dend = shc.dendrogram(shc.linkage(data, method='ward'))
-
-
-from sklearn.cluster import AgglomerativeClustering
 
 cluster = AgglomerativeClustering(n_clusters=5, affinity='euclidean', linkage='ward')
 cluster.fit_predict(data)
 
-
-
 plt.figure(figsize=(10, 7))
-plt.scatter(data[:,0], data[:,1], c=cluster.labels_, cmap='rainbow')
+plt.scatter(data[:,1], data[:,2], c=cluster.labels_, cmap='rainbow')
+
+for col in normalized_df.columns:
+    normalized_df[col] = encoder.fit_transform(normalized_df[col])
+
+X_features = normalized_df.iloc[:,0:60]
+y_label = normalized_df.columns
+X_features = scaler.fit_transform(X_features)
+
+pca = PCA()
+pca.fit_transform(X_features)
+pca_variance = pca.explained_variance_
+
+plt.figure(figsize=(8, 6))
+plt.bar(range(60), pca_variance, alpha=0.5, align='center', label='individual variance')
+plt.legend()
+plt.ylabel('Variance ratio')
+plt.xlabel('Principal components')
+plt.show()
+
+#%%
+
+
 ''' 
 COSAS DE PRUEBASs[1]
 s
