@@ -80,6 +80,8 @@ users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 print(full_df.info())
 print(users_df.info())
 
+
+#create binary columns wether user has rated that movie
 mlb = MultiLabelBinarizer()
 s = users_df['rated_movs']
 seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
