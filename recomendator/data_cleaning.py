@@ -44,12 +44,6 @@ full_df = pd.merge(ratings_small_df,movies_metadata_df, on='movieId')
 full_df['budget'] = full_df['budget'].astype('int', copy=False)
 full_df['original_language'] = full_df['original_language'].astype('string', copy=False)
 full_df['release_date'] = pd.to_datetime(full_df['release_date'])
-#dropping genre labels, keeping just its id
-# for i in range(len(full_df['genres'])):
-#     genres = full_df['genres'][i]
-#     numbers = re.findall(r'\d+', genres)
-#     ids = ','.join([n for n in numbers])
-#     full_df.loc[i,'genres']='[' + ids + ']'
 
 def extract_ids(x):
     numbers = re.findall(r'\d+',x)
