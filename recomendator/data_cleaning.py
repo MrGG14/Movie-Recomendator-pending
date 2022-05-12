@@ -89,12 +89,43 @@ users_df = users_df.drop(columns=['rated_movs','genres_movs'])
 #normalize the data
 normalized_df=(users_df-users_df.mean())/users_df.std()
 normalized_df
- 
-#clustering
-cluster = AgglomerativeClustering(n_clusters=671, affinity='euclidean', linkage='ward')
-cluster.fit_predict(normalized_df)
 
 
+#standardise the data
+# from sklearn.preprocessing import StandardScaler
+# scaler = StandardScaler()
+
+# standardized = scaler.fit_transform(users_df)
+
+# #clustering
+# cluster = AgglomerativeClustering(n_clusters=671, affinity='euclidean', linkage='ward')
+# a=cluster.fit_predict(normalized_df)
+# b=cluster.fit_predict(standardized)
+# print(a==b) #son iguales
+
+
+import matplotlib.pyplot as plt
+
+normalized_df.shape
+normalized_df.head()
+data = normalized_df.iloc[:, 0:7].values
+
+import scipy.cluster.hierarchy as shc
+
+plt.figure(figsize=(10, 7))
+plt.title("Customer Dendograms")
+dend = shc.dendrogram(shc.linkage(data, method='ward'))
+
+
+from sklearn.cluster import AgglomerativeClustering
+
+cluster = AgglomerativeClustering(n_clusters=5, affinity='euclidean', linkage='ward')
+cluster.fit_predict(data)
+
+
+
+plt.figure(figsize=(10, 7))
+plt.scatter(data[:,0], data[:,1], c=cluster.labels_, cmap='rainbow')
 ''' 
 COSAS DE PRUEBASs[1]
 s
