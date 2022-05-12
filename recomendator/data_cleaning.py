@@ -9,6 +9,9 @@ import pandas as pd
 import re
 import os
 from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.cluster import AgglomerativeClustering
+import numpy as np
+
 
 
 #%%
@@ -77,15 +80,26 @@ users_df['genres_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(
 users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
 users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
-print(full_df.info())
-print(users_df.info())
+
 
 
 #create binary columns wether user has rated that movie
 mlb = MultiLabelBinarizer()
 s = users_df['rated_movs']
-seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
+seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index) 
+
+#merge with rated movies
 users_df = pd.merge(users_df,seen_movs, on='userId')
+users_df = users_df.drop(columns=['rated_movs','genres_movs'])
+
+#normalize the data
+normalized_df=(users_df-users_df.mean())/users_df.std()
+normalized_df
+ 
+#clustering
+cluster = AgglomerativeClustering(n_clusters=671, affinity='euclidean', linkage='ward')
+cluster.fit_predict(normalized_df)
+
 
 ''' 
 COSAS DE PRUEBASs[1]
