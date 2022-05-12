@@ -40,6 +40,7 @@ ratings_small_df['userId'] = ratings_small_df['userId'].astype('string', copy=Fa
 full_df = pd.merge(ratings_small_df,movies_metadata_df, on='movieId')
 full_df['budget'] = full_df['budget'].astype('int', copy=False)
 full_df['original_language'] = full_df['original_language'].astype('string', copy=False)
+full_df['release_date'] = pd.to_datetime(full_df['release_date'])
 #dropping genre labels, keeping just its id
 # for i in range(len(full_df['genres'])):
 #     genres = full_df['genres'][i]
@@ -60,7 +61,8 @@ def extract_countryId(x):
 full_df['genres'] = full_df['genres'].apply(extract_ids)
 full_df['production_companies'] = full_df['production_companies'].apply(extract_ids)
 full_df['production_countries'] = full_df['production_countries'].apply(extract_countryId)
-
+full_df['release_date'] = pd.to_datetime(full_df['release_date'])
+full_df['title'] = full_df['title'].astype('string')
 
 #create users_df
 users_df  = full_df.groupby(by=['userId']).mean()
@@ -75,15 +77,13 @@ users_df['genres_movs']  = full_df.groupby('userId').apply(lambda full_df: dict(
 users_df = users_df.drop(columns=['runtime', 'vote_average', 'vote_count'])
 users_df.rename(columns={'rating': 'avg_rating'}, inplace=1)
 
-# print(full_df.info())
-# print(users_df.info())
+print(full_df.info())
+print(users_df.info())
 
 mlb = MultiLabelBinarizer()
 s = users_df['rated_movs']
 seen_movs = pd.DataFrame(mlb.fit_transform(s),columns=mlb.classes_, index=s.index)
 users_df = pd.merge(users_df,seen_movs, on='userId')
-# full_df[0:10].plot(kind='barh')
-# full_df.info()
 
 ''' 
 COSAS DE PRUEBASs[1]
