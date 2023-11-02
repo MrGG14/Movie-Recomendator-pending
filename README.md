@@ -1,8 +1,8 @@
 # Movie-Recomendator-pending
 The aim of this project is to build a Movie Recommenator system based on clustering. 
 
-The idea is: 
-1. given an user search its n closests users.
+The idea is given an user: 
+1. Search its n closests users.
 2. Pic the movie which hasnt been seen by the new user and has the highest mean reviews of the other closests users
 
 ## DATA
