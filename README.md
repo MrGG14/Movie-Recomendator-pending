@@ -1,10 +1,10 @@
 # Movie-Recomendator-pending
 The aim of this project is to build a Movie Recommenator system based on clustering. 
 
-The idea is given an user: 
+The idea is given a objective user: 
 1. Search its n closests users.
-2. Pic the movie which hasnt been seen by the new user and has the highest mean reviews of the other closests users
-
+2. Calculate the mean rating of each movie based on the closests users.
+3. Recomend the highest mean rated movie which hasnt been seen by the new objective user.
 ## DATA
 
 First of all we need data from different users. I used the dataset available in kaggle called ['The Movie Dataset'](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset). As a [Filmaffinity](https://www.filmaffinity.com/es/main.html) user I wanted to retrieve my own reviews 
